@@ -25,6 +25,7 @@ AM_CPPFLAGS = \
 
 tinyproxy_SOURCES = \
 	acl.c acl.h \
+	auth.c auth.h \
 	anonymous.c anonymous.h \
 	authors.c authors.h \
 	buffer.c buffer.h \
