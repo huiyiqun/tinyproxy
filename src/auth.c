@@ -65,3 +65,15 @@ int insert_auth (char *auth, hashmap_t * auth_table)
         ret = hashmap_insert (*auth_table, username, password, password_len);
         return ret;
 }
+
+/*
+ * Checks whether a connection is allowed.
+ *
+ * Returns:
+ *     1 if allowed
+ *     0 if denied
+ */
+int check_auth (hashmap_t headers, hashmap_t auth_table)
+{
+        return 0;
+}
