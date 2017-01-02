@@ -48,16 +48,18 @@ insert_auth (char *auth, hashmap_t *auth_table)
          * Split auth into username/password pair.
          */
         p = strchr(auth, ':');
-        if (p == NULL)
+        if (p == NULL) {
                 return -1;
+        }
 
         *p = '\0';
         username = auth;
         password = p + 1;
 
         password_len = strlen(password);
-        if (password_len == 0)
+        if (password_len == 0) {
                 return -1;
+        }
 
         /*
          * Store username/password pair into auth_table.
