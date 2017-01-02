@@ -75,5 +75,11 @@ int insert_auth (char *auth, hashmap_t * auth_table)
  */
 int check_auth (hashmap_t headers, hashmap_t auth_table)
 {
+        /*
+         * If there is no auth table allow everything.
+         */
+        if (!auth_table)
+                return 1;
+
         return 0;
 }
