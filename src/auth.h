@@ -3,6 +3,6 @@
 
 #include "hashmap.h"
 
-extern int insert_auth (char *auth, hashmap_t *auth_table);
+extern int insert_auth (char *auth, hashmap_t * auth_table);
 
 #endif

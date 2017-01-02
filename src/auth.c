@@ -7,7 +7,7 @@
 /**
  * If the authorization table has not been set up, create it.
  */
-static int init_auth_table(hashmap_t *auth_table)
+static int init_auth_table (hashmap_t * auth_table)
 {
         if (!*auth_table) {
                 *auth_table = hashmap_create (AUTH_BUCKETS);
@@ -30,24 +30,22 @@ static int init_auth_table(hashmap_t *auth_table)
  *    -1 on failure
  *     0 otherwise.
  */
-int
-insert_auth (char *auth, hashmap_t *auth_table)
+int insert_auth (char *auth, hashmap_t * auth_table)
 {
         int password_len, ret;
         char *p, *username, *password;
 
         assert (auth != NULL);
 
-        ret = init_auth_table(auth_table);
+        ret = init_auth_table (auth_table);
         if (ret != 0) {
                 return -1;
         }
 
-
         /*
          * Split auth into username/password pair.
          */
-        p = strchr(auth, ':');
+        p = strchr (auth, ':');
         if (p == NULL) {
                 return -1;
         }
@@ -56,7 +54,7 @@ insert_auth (char *auth, hashmap_t *auth_table)
         username = auth;
         password = p + 1;
 
-        password_len = strlen(password);
+        password_len = strlen (password);
         if (password_len == 0) {
                 return -1;
         }
