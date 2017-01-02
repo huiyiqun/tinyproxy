@@ -26,6 +26,7 @@
 #include "conf.h"
 
 #include "acl.h"
+#include "auth.h"
 #include "anonymous.h"
 #include "child.h"
 #include "filter.h"
@@ -116,6 +117,7 @@ static HANDLE_FUNC (handle_nop)
 }                               /* do nothing function */
 
 static HANDLE_FUNC (handle_allow);
+static HANDLE_FUNC (handle_auth);
 static HANDLE_FUNC (handle_anonymous);
 static HANDLE_FUNC (handle_bind);
 static HANDLE_FUNC (handle_bindsame);
@@ -232,6 +234,8 @@ struct {
         /* other */
         STDCONF ("errorfile", INT WS STR, handle_errorfile),
         STDCONF ("addheader",  STR WS STR, handle_addheader),
+
+        STDCONF ("auth", STR ":" STR, handle_auth),
 
 #ifdef FILTER_ENABLE
         /* filtering */
@@ -869,6 +873,15 @@ static HANDLE_FUNC (handle_deny)
         char *arg = get_string_arg (line, &match[2]);
 
         insert_acl (arg, ACL_DENY, &conf->access_list);
+        safefree (arg);
+        return 0;
+}
+
+static HANDLE_FUNC (handle_auth)
+{
+        char *arg = get_string_arg (line, &match[2]);
+
+        insert_auth (arg, &conf->auth_table);
         safefree (arg);
         return 0;
 }

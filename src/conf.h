@@ -96,6 +96,12 @@ struct config_s {
         vector_t access_list;
 
         /*
+         * username/password pair should be checked before handle proxy
+         * request.
+         */
+        hashmap_t auth_table;
+
+        /*
          * Store the list of port allowed by CONNECT.
          */
         vector_t connect_ports;
