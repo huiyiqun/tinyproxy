@@ -36,6 +36,14 @@ insert_auth (char *auth, hashmap_t *auth_table)
     int password_len, ret;
     char *p, *username, *password;
 
+    assert (auth != NULL);
+
+    ret = init_auth_table(auth_table);
+    if (ret != 0) {
+            return -1;
+    }
+
+
     /*
      * Split auth into username/password pair.
      */
