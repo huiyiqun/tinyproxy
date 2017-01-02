@@ -65,6 +65,7 @@ struct conn_s *initialize_conn (int client_fd, const char *ipaddr,
 
         /* These store any error strings */
         connptr->error_variables = NULL;
+        connptr->extra_error_headers = NULL;
         connptr->error_string = NULL;
         connptr->error_number = -1;
 

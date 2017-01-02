@@ -1482,6 +1482,8 @@ void handle_connection (int fd)
                                      "detail",
                                      "Authentication is required to use this "
                                      "proxy.", NULL);
+                add_error_header (connptr, "Proxy-Authenticate",
+                                  "Basic realm=\"Proxy Server\"");
                 goto fail;
         }
 

@@ -28,6 +28,8 @@ extern int add_new_errorpage (char *filepath, unsigned int errornum);
 extern int send_http_error_message (struct conn_s *connptr);
 extern int indicate_http_error (struct conn_s *connptr, int number,
                                 const char *message, ...);
+extern int add_error_header (struct conn_s *connptr, const char *key,
+                             const char *val);
 extern int add_error_variable (struct conn_s *connptr, const char *key,
                                const char *val);
 extern int send_html_file (FILE * infile, struct conn_s *connptr);

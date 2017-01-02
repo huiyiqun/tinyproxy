@@ -30,6 +30,7 @@
 #include "network.h"
 #include "utils.h"
 #include "conf.h"
+#include "log.h"
 
 /*
  * Add an error number -> filename mapping to the errorpages list.
@@ -180,10 +181,14 @@ int send_http_headers (struct conn_s *connptr, int code, const char *message)
         const char *headers =
             "HTTP/1.0 %d %s\r\n"
             "Server: %s/%s\r\n"
-            "Content-Type: text/html\r\n" "Connection: close\r\n" "\r\n";
+            "Content-Type: text/html\r\n"
+            "%s"
+            "Connection: close\r\n"
+            "\r\n";
 
         return (write_message (connptr->client_fd, headers,
-                               code, message, PACKAGE, VERSION));
+                               code, message, PACKAGE, VERSION,
+                               connptr->extra_error_headers ? connptr->extra_error_headers : ""));
 }
 
 /*
@@ -223,6 +228,45 @@ int send_http_error_message (struct conn_s *connptr)
         ret = send_html_file (infile, connptr);
         fclose (infile);
         return (ret);
+}
+
+/*
+ * Add a header to the extra headers
+ */
+int
+add_error_header (struct conn_s *connptr, const char *key, const char *val)
+{
+        int len;
+        char *new_extra_headers;
+
+        /*
+         * Count length of new extra headers
+         */
+        len = strlen (key) + 2 + strlen (val) + 2 + 1;
+        if (connptr->extra_error_headers) {
+                len += strlen (connptr->extra_error_headers);
+        }
+
+        /*
+         * Generate new extra headers
+         */
+        new_extra_headers = (char *) safemalloc (len);
+        if (!new_extra_headers) {
+                log_message (LOG_ERR,
+                             "Unable to allocate memory in add_extra_header()");
+                return -1;
+        }
+        snprintf (new_extra_headers, len, "%s%s: %s\r\n",
+                  connptr->extra_error_headers ? connptr->extra_error_headers : "",
+                  key, val);
+
+        /*
+         * Replace the old one
+         */
+        safefree (connptr->extra_error_headers);
+        connptr->extra_error_headers = new_extra_headers;
+
+        return 0;
 }
 
 /*

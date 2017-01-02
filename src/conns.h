@@ -47,6 +47,12 @@ struct conn_s {
          */
         hashmap_t error_variables;
 
+        /*
+         * Extra http headers should be included in the error message
+         * sended to user.
+         */
+        char *extra_error_headers;
+
         int error_number;
         char *error_string;
 
