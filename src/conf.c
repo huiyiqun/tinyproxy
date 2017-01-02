@@ -78,6 +78,7 @@
 #define IPV6MASK "(" IPV6 "(/[[:digit:]]+)?)"
 #define BEGIN "^[[:space:]]*"
 #define END "[[:space:]]*$"
+#define AUTH "\"([^\"]+:[^\"]+)\""
 
 /*
  * Limit the maximum number of substring matches to a reasonably high
@@ -235,7 +236,7 @@ struct {
         STDCONF ("errorfile", INT WS STR, handle_errorfile),
         STDCONF ("addheader",  STR WS STR, handle_addheader),
 
-        STDCONF ("auth", STR ":" STR, handle_auth),
+        STDCONF ("auth", AUTH, handle_auth),
 
 #ifdef FILTER_ENABLE
         /* filtering */
