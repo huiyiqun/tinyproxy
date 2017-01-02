@@ -33,35 +33,35 @@ static int init_auth_table(hashmap_t *auth_table)
 int
 insert_auth (char *auth, hashmap_t *auth_table)
 {
-    int password_len, ret;
-    char *p, *username, *password;
+        int password_len, ret;
+        char *p, *username, *password;
 
-    assert (auth != NULL);
+        assert (auth != NULL);
 
-    ret = init_auth_table(auth_table);
-    if (ret != 0) {
-            return -1;
-    }
+        ret = init_auth_table(auth_table);
+        if (ret != 0) {
+                return -1;
+        }
 
 
-    /*
-     * Split auth into username/password pair.
-     */
-    p = strchr(auth, ':');
-    if (p == NULL)
-        return -1;
+        /*
+         * Split auth into username/password pair.
+         */
+        p = strchr(auth, ':');
+        if (p == NULL)
+                return -1;
 
-    *p = '\0';
-    username = auth;
-    password = p + 1;
+        *p = '\0';
+        username = auth;
+        password = p + 1;
 
-    password_len = strlen(password);
-    if (password_len == 0)
-        return -1;
+        password_len = strlen(password);
+        if (password_len == 0)
+                return -1;
 
-    /*
-     * Store username/password pair into auth_table.
-     */
-    ret = hashmap_insert (*auth_table, username, password, password_len);
-    return ret;
+        /*
+         * Store username/password pair into auth_table.
+         */
+        ret = hashmap_insert (*auth_table, username, password, password_len);
+        return ret;
 }
