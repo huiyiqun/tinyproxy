@@ -120,6 +120,18 @@ if test x"$reverse_enabled" = x"yes"; then
     AC_DEFINE(REVERSE_SUPPORT)
 fi
 
+dnl Include support for authorization?
+AH_TEMPLATE([AUTHORIZATION_SUPPORT],
+            [Include support for authorization.])
+TP_ARG_ENABLE(authorization,
+              [Enable authorization (default is NO)],
+              no)
+if test x"$authorization_enabled" = x"yes"; then
+    ADDITIONAL_OBJECTS="$ADDITIONAL_OBJECTS auth.o"
+    AC_DEFINE(AUTHORIZATION_SUPPORT)
+    AC_CHECK_LIB([ssl], [SSL_library_init],[], [AC_MSG_FAILURE([could not find ssl])
+fi
+
 dnl Include the transparent proxy support
 AH_TEMPLATE([TRANSPARENT_PROXY],
 	    [Include support for using tinyproxy as a transparent proxy.])
