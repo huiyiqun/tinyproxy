@@ -118,7 +118,9 @@ static HANDLE_FUNC (handle_nop)
 }                               /* do nothing function */
 
 static HANDLE_FUNC (handle_allow);
+#ifdef AUTHORIZATION_ENABLE
 static HANDLE_FUNC (handle_auth);
+#endif
 static HANDLE_FUNC (handle_anonymous);
 static HANDLE_FUNC (handle_bind);
 static HANDLE_FUNC (handle_bindsame);
@@ -236,7 +238,10 @@ struct {
         STDCONF ("errorfile", INT WS STR, handle_errorfile),
         STDCONF ("addheader",  STR WS STR, handle_addheader),
 
+#ifdef AUTHORIZATION_ENABLE
+        /* authorization */
         STDCONF ("auth", AUTH, handle_auth),
+#endif
 
 #ifdef FILTER_ENABLE
         /* filtering */
@@ -878,6 +883,7 @@ static HANDLE_FUNC (handle_deny)
         return 0;
 }
 
+#ifdef AUTHORIZATION_ENABLE
 static HANDLE_FUNC (handle_auth)
 {
         char *arg = get_string_arg (line, &match[2]);
@@ -886,6 +892,7 @@ static HANDLE_FUNC (handle_auth)
         safefree (arg);
         return 0;
 }
+#endif
 
 static HANDLE_FUNC (handle_bind)
 {

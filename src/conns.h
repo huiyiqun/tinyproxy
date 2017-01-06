@@ -47,11 +47,13 @@ struct conn_s {
          */
         hashmap_t error_variables;
 
+#ifdef AUTHORIZATION_ENABLE
         /*
          * Extra http headers should be included in the error message
          * sended to user.
          */
         char *extra_error_headers;
+#endif
 
         int error_number;
         char *error_string;

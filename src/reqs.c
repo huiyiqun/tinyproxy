@@ -1476,6 +1476,7 @@ void handle_connection (int fd)
                 goto fail;
         }
 
+#ifdef AUTHORIZATION_ENABLE
         if (check_auth (hashofheaders, config.auth_table) <= 0) {
                 update_stats (STAT_DENIED);
                 indicate_http_error (connptr, 407, "Authentication Required",
@@ -1486,6 +1487,7 @@ void handle_connection (int fd)
                                   "Basic realm=\"Proxy Server\"");
                 goto fail;
         }
+#endif
 
         /*
          * Add any user-specified headers (AddHeader directive) to the

@@ -129,7 +129,7 @@ TP_ARG_ENABLE(authorization,
 if test x"$authorization_enabled" = x"yes"; then
     ADDITIONAL_OBJECTS="$ADDITIONAL_OBJECTS auth.o"
     AC_DEFINE(AUTHORIZATION_SUPPORT)
-    AC_CHECK_LIB([ssl], [SSL_library_init],[], [AC_MSG_FAILURE([could not find ssl])
+    AC_CHECK_LIB([ssl], [SSL_library_init],[], [AC_MSG_FAILURE([could not find ssl])])
 fi
 
 dnl Include the transparent proxy support

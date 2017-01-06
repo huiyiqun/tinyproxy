@@ -182,13 +182,18 @@ int send_http_headers (struct conn_s *connptr, int code, const char *message)
             "HTTP/1.0 %d %s\r\n"
             "Server: %s/%s\r\n"
             "Content-Type: text/html\r\n"
+#ifdef AUTHORIZATION_ENABLE
             "%s"
+#endif
             "Connection: close\r\n"
             "\r\n";
 
         return (write_message (connptr->client_fd, headers,
-                               code, message, PACKAGE, VERSION,
-                               connptr->extra_error_headers ? connptr->extra_error_headers : ""));
+                               code, message, PACKAGE, VERSION
+#ifdef AUTHORIZATION_ENABLE
+                               ,connptr->extra_error_headers ? connptr->extra_error_headers : ""
+#endif
+                              ));
 }
 
 /*
@@ -230,6 +235,7 @@ int send_http_error_message (struct conn_s *connptr)
         return (ret);
 }
 
+#ifdef AUTHORIZATION_ENABLE
 /*
  * Add a header to the extra headers
  */
@@ -268,6 +274,7 @@ add_error_header (struct conn_s *connptr, const char *key, const char *val)
 
         return 0;
 }
+#endif
 
 /*
  * Add a key -> value mapping for HTML file substitution.
