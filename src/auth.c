@@ -75,11 +75,22 @@ int insert_auth (char *auth, hashmap_t * auth_table)
  */
 int check_auth (hashmap_t headers, hashmap_t auth_table)
 {
+        char *key;
+        char *val;
+        hashmap_iter result_iter;
+
         /*
          * If there is no auth table allow everything.
          */
         if (!auth_table)
                 return 1;
 
-        return 0;
+        result_iter = hashmap_find (headers, "Proxy-Authorization");
+        if (hashmap_is_end (headers, result_iter) ||
+            hashmap_return_entry (headers, result_iter,
+                                  &key, (void **) &val) < 0) {
+                return 0;
+        }
+
+        return 1;
 }
