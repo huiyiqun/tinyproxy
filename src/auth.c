@@ -77,6 +77,7 @@ int check_auth (hashmap_t headers, hashmap_t auth_table)
 {
         char *key;
         char *val;
+        char *sep;
         hashmap_iter result_iter;
 
         /*
@@ -86,9 +87,27 @@ int check_auth (hashmap_t headers, hashmap_t auth_table)
                 return 1;
 
         result_iter = hashmap_find (headers, "Proxy-Authorization");
+        /*
+         * No Proxy-Authorization header
+         */
         if (hashmap_is_end (headers, result_iter) ||
             hashmap_return_entry (headers, result_iter,
                                   &key, (void **) &val) < 0) {
+                return 0;
+        }
+
+        sep = strchr(val, ' ');
+        /*
+         * Invalid Proxy-Authorization header
+         */
+        if (sep == NULL) {
+                return 0;
+        }
+
+        /*
+         * Currently only Basic is supported
+         */
+        if (strncmp(val, "Basic", sep - val) != 0) {
                 return 0;
         }
 
