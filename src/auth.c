@@ -1,6 +1,7 @@
 #include "hashmap.h"
 #include "auth.h"
 #include "log.h"
+#include "coding.h"
 
 #define AUTH_BUCKETS 256
 
@@ -78,6 +79,10 @@ int check_auth (hashmap_t headers, hashmap_t auth_table)
         char *key;
         char *val;
         char *sep;
+        char *credential;
+        char *plain_credential;
+        char *username, *password;
+        size_t length;
         hashmap_iter result_iter;
 
         /*
@@ -110,6 +115,34 @@ int check_auth (hashmap_t headers, hashmap_t auth_table)
         if (strncmp(val, "Basic", sep - val) != 0) {
                 return 0;
         }
+
+        credential = sep + 1;
+
+        base64_decode(credential, (unsigned char **)&plain_credential, &length);
+
+        sep = strchr(plain_credential, ':');
+        *sep = '\0';
+
+        username = plain_credential;
+        password = sep + 1;
+
+        result_iter = hashmap_find (auth_table, username);
+        /*
+         * No such user
+         */
+        if (hashmap_is_end (auth_table, result_iter) ||
+            hashmap_return_entry (auth_table, result_iter,
+                                  &key, (void **) &val) < 0) {
+                free(plain_credential);
+                return 0;
+        }
+
+        if (strcmp(val, password) != 0) {
+                free(plain_credential);
+                return 0;
+        }
+
+        free(plain_credential);
 
         return 1;
 }
