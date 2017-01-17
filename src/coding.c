@@ -6,6 +6,10 @@ int base64_decode(char *b64msg, unsigned char **buffer, size_t *length) {
         BIO *bio, *b64;
         int plain_len;
         int b64_len;
+        /*
+         * In case that random pointer is freed
+         */
+        *buffer = NULL;
         
         b64_len = strlen(b64msg);
 
@@ -37,6 +41,7 @@ int base64_decode(char *b64msg, unsigned char **buffer, size_t *length) {
          * Decode
          */
         if (BIO_read(b64, *buffer, plain_len) != plain_len) {
+                BIO_free_all(b64);
                 return -1;
         }
 

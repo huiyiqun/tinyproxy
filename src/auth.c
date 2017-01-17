@@ -118,9 +118,26 @@ int check_auth (hashmap_t headers, hashmap_t auth_table)
 
         credential = sep + 1;
 
-        base64_decode(credential, (unsigned char **)&plain_credential, &length);
+#ifndef NDEBUG
+        fprintf (stderr, "{credential: %s}\n", credential);
+#endif
+
+        if(base64_decode(credential, (unsigned char **)&plain_credential, &length) != 0) {
+                free(plain_credential);
+                return 0;
+        }
+
+#ifndef NDEBUG
+        fprintf (stderr, "{plain credential: %s}\n", plain_credential);
+#endif
 
         sep = strchr(plain_credential, ':');
+        /*
+         * No ':' in credential
+         */
+        if (sep == NULL) {
+                return 0;
+        }
         *sep = '\0';
 
         username = plain_credential;
@@ -137,6 +154,9 @@ int check_auth (hashmap_t headers, hashmap_t auth_table)
                 return 0;
         }
 
+        /*
+         * Wrong password
+         */
         if (strcmp(val, password) != 0) {
                 free(plain_credential);
                 return 0;
