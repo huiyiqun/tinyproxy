@@ -129,7 +129,6 @@ TP_ARG_ENABLE(authorization,
 if test x"$authorization_enabled" = x"yes"; then
     ADDITIONAL_OBJECTS="$ADDITIONAL_OBJECTS auth.o coding.o"
     AC_DEFINE(AUTHORIZATION_ENABLE)
-    AC_CHECK_LIB([crypto], [EVP_MD_CTX_init],[], [AC_MSG_FAILURE([could not find crypto])])
 fi
 
 dnl Include the transparent proxy support

@@ -80,26 +80,33 @@ int check_auth (hashmap_t headers, hashmap_t auth_table)
         char *val;
         char *sep;
         char *credential;
-        char *plain_credential;
+        unsigned char *plain_credential;
         char *username, *password;
-        size_t length;
+        ssize_t length;
         hashmap_iter result_iter;
+        int success = 0;  /* We don't anticipate successful auth, start with failed state */
 
         /*
          * If there is no auth table allow everything.
          */
-        if (!auth_table)
+        if (!auth_table) {
                 return 1;
+        }
 
         result_iter = hashmap_find (headers, "Proxy-Authorization");
         /*
          * No Proxy-Authorization header
          */
-        if (hashmap_is_end (headers, result_iter) ||
-            hashmap_return_entry (headers, result_iter,
-                                  &key, (void **) &val) < 0) {
+        if (hashmap_is_end (headers, result_iter)) {
                 return 0;
         }
+
+        length = hashmap_return_entry (headers, result_iter,
+                                       &key, (void **) &val);
+        if (length < 0) {
+                return 0;
+        }
+        val[length] = 0;  /* value is not NULL terminated */
 
         sep = strchr(val, ' ');
         /*
@@ -122,47 +129,58 @@ int check_auth (hashmap_t headers, hashmap_t auth_table)
         fprintf (stderr, "{credential: %s}\n", credential);
 #endif
 
-        if(base64_decode(credential, (unsigned char **)&plain_credential, &length) != 0) {
-                free(plain_credential);
-                return 0;
+        /* This call allocates a memory buffer, after this we
+         * need to free plain_credential before exiting -> goto exit;
+         */
+        if( (length = base64_decode(credential, &plain_credential)) < 1) {
+                goto exit;
         }
 
 #ifndef NDEBUG
-        fprintf (stderr, "{plain credential: %s}\n", plain_credential);
+        fprintf (stderr, "{plain credential: '%s'}\n", plain_credential);
 #endif
 
-        sep = strchr(plain_credential, ':');
+        sep = strchr((char *)plain_credential, ':');
         /*
          * No ':' in credential
          */
         if (sep == NULL) {
-                return 0;
+                goto exit;
         }
         *sep = '\0';
 
-        username = plain_credential;
+        username = (char *) plain_credential;
         password = sep + 1;
+
+#ifndef NDEBUG
+        fprintf (stderr, "Username: '%s'    Password: '%s'\n", username, password);
+#endif
 
         result_iter = hashmap_find (auth_table, username);
         /*
          * No such user
          */
-        if (hashmap_is_end (auth_table, result_iter) ||
-            hashmap_return_entry (auth_table, result_iter,
-                                  &key, (void **) &val) < 0) {
-                free(plain_credential);
-                return 0;
+        if (hashmap_is_end (auth_table, result_iter)) {
+                goto exit;
         }
+        length = hashmap_return_entry (auth_table, result_iter,
+                                               &key, (void **) &val);
+        if (length < 0) {
+                goto exit;
+        }
+        val[length] = 0;  /* value is not NULL terminated */
 
         /*
          * Wrong password
          */
         if (strcmp(val, password) != 0) {
-                free(plain_credential);
-                return 0;
+                goto exit;
         }
 
-        free(plain_credential);
+        /* If we arrived here, authentication was successful */
+        success = 1;
 
-        return 1;
+ exit:
+        free(plain_credential);
+        return success;
 }

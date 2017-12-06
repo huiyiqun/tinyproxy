@@ -22,7 +22,6 @@
 #ifndef TINYPROXY_CODING_H
 #define TINYPROXY_CODING_H
 
-#include "common.h"
+size_t base64_decode(char *b64msg, unsigned char **buffer);
 
-int base64_decode(char *b64msg, unsigned char **buffer, size_t *length);
 #endif
